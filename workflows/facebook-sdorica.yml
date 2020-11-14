@@ -12,9 +12,9 @@ jobs:
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
-          url: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          url: ${{ secrets.DISCORD_WEBHOOK_NEWS_FEED }}
           method: 'POST'
-          data: |
+          data: &data |
             {
               "username": "Sdorica Facebook",
               "content": "<${{on.facebook.outputs.link}}>",
@@ -31,3 +31,9 @@ jobs:
                 }
               }]
             }
+      - name: Discord notification
+        uses: actionsflow/axios@v1
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK_GAMECHAT }}
+          method: 'POST'
+          data: *data
