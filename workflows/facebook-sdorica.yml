@@ -9,31 +9,43 @@ jobs:
     name: Send a message to discord
     runs-on: ubuntu-latest
     steps:
-      - name: Discord notification
-        uses: actionsflow/axios@v1
+      - name: Format message
+        id: format
+        uses: actions/github-script@v2
         with:
-          url: ${{ secrets.DISCORD_WEBHOOK_NEWS_FEED }}
-          method: 'POST'
-          data: &data |
-            {
+          script: |
+            const outputs = ${{ toJSON(on.facebook.outputs) }};
+            const payload = {
               "username": "Sdorica Facebook",
-              "content": "<${{on.facebook.outputs.link}}>",
+              "content": `<${outputs.link}>`,
               "embeds": [{
                 "author": {
                   "name": "Sdorica (@rayark.sdorica)",
                   "url": "https://www.facebook.com/rayark.sdorica/",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777186584000724992/118745707_1600182993519599_5578732041796140826_o.png"
                 },
-                "description": "<<<${{on.facebook.outputs.content}}>>>",
+                "description": outputs.content,
                 "footer": {
                   "text": "Facebook",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
                 }
               }]
+            };
+            if (outputs.images.length > 0) {
+              payload["embeds"][0]["image"] = {
+                "url": outputs.images[0]
+              };
             }
+            return payload;
+      - name: Discord notification
+        uses: actionsflow/axios@v1
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK_NEWS_FEED }}
+          method: 'POST'
+          data: ${{ steps.format.outputs.result }}
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
           url: ${{ secrets.DISCORD_WEBHOOK_GAMECHAT }}
           method: 'POST'
-          data: *data
+          data: ${{ steps.format.outputs.result }}

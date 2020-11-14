@@ -1,0 +1,18 @@
+on:
+  script:
+    run: |
+      const result = await helpers.axios.get("${{ secrets.BOT_ENTRYPOINT }}", {
+        responseType: 'text'
+      });
+      return [{data: result.data}];
+
+jobs:
+  print:
+    name: Print
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Outputs
+        env:
+          data: ${{on.script.outputs.data}}
+        run: |
+          echo $data
