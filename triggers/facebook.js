@@ -110,11 +110,15 @@ module.exports = class Facebook {
 
 	async fetchPageHtml(linkPath) {
 		const url = `https://mbasic.facebook.com${linkPath}`;
+		const { lang } = this.options;
 
 		this.helpers.log.debug("fetch page html:", url);
 		const { data: html } = await this.helpers.axios({
 			url,
 			responseType: 'text',
+			headers: {
+				"accept-language": lang
+			}
 		});
 		return html;
 	}
