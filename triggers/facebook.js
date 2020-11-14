@@ -117,7 +117,7 @@ module.exports = class Facebook {
 			url,
 			responseType: 'text',
 			headers: {
-				"accept-language": lang
+				"accept-language": lang || "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6"
 			}
 		});
 		return html;
