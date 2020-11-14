@@ -1,0 +1,32 @@
+on:
+  facebook:
+    page: TWCDC
+    config:
+      # skipFirst: true
+
+jobs:
+  discord:
+    name: Send a message to discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification
+        uses: actionsflow/axios@v1
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK_TWCDC }}
+          method: 'POST'
+          data: |
+            {
+              "username": "疾病管制署 - 1922防疫達人",
+              "content": "<${{on.facebook.outputs.link}}>",
+              "embeds": [{
+                "author": {
+                  "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
+                  "url": "https://www.facebook.com/TWCDC/"
+                },
+                "description": "<<<${{on.facebook.outputs.content}}>>>",
+                "footer": {
+                  "text": "Facebook",
+                  "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
+                }
+              }]
+            }
