@@ -9,29 +9,25 @@ jobs:
     name: Send a message to discord
     runs-on: ubuntu-latest
     steps:
-      - name: Format embeds
-        id: format
-        uses: actions/github-script@v2
-        with:
-          script: |
-            const outputs = ${{ toJSON(on.facebook.outputs) }};
-            return [{
-              "author": {
-                "name": "Sdorica (@rayark.sdorica)",
-                "url": "https://www.facebook.com/rayark.sdorica/",
-                "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777186584000724992/118745707_1600182993519599_5578732041796140826_o.png"
-              },
-              "description": outputs.content,
-              "footer": {
-                "text": "Facebook",
-                "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
-              }
-            }];
       - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
-          DISCORD_USERNAME: Sdorica Facebook
-          DISCORD_EMBEDS: ${{ steps.format.outputs.result }}
-        uses: Ilshidur/action-discord@master
+        uses: actionsflow/axios@v1
         with:
-          args: <${{on.facebook.outputs.link}}>
+          url: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          method: 'POST'
+          data: |
+            {
+              "username": "Sdorica Facebook",
+              "content": "<${{on.facebook.outputs.link}}>"
+              "embeds": [{
+                "author": {
+                  "name": "Sdorica (@rayark.sdorica)",
+                  "url": "https://www.facebook.com/rayark.sdorica/",
+                  "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777186584000724992/118745707_1600182993519599_5578732041796140826_o.png"
+                },
+                "description": "<<<${{on.facebook.outputs.content}}>>>",
+                "footer": {
+                  "text": "Facebook",
+                  "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
+                }
+              }]
+            }

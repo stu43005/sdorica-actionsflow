@@ -20,12 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
-          DISCORD_USERNAME: GNN新聞
-          DISCORD_AVATAR: https://cdn.discordapp.com/attachments/543454386873958413/777182478410317834/jcseAjD.png
-        uses: Ilshidur/action-discord@master
+        uses: actionsflow/axios@v1
         with:
-          args: |
-            ${{on.rss.outputs.title}}
-            ${{on.rss.outputs.link}}
+          url: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          method: 'POST'
+          data: |
+            {
+              "username": "GNN新聞",
+              "avatar_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182478410317834/jcseAjD.png",
+              "content": "${{on.rss.outputs.title}}\n${{on.rss.outputs.link}}"
+            }

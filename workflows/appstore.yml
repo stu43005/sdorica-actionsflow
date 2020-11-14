@@ -16,15 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
-          DISCORD_USERNAME: App Store Update
-          DISCORD_AVATAR: https://cdn.discordapp.com/attachments/543454386873958413/777182480267608114/mi0S5wK.jpg
-        uses: Ilshidur/action-discord@master
+        uses: actionsflow/axios@v1
         with:
-          args: |
-            **${{on.poll.outputs.trackName}} ${{on.poll.outputs.version}} 版本已上架 App Store**
-            前往商店查看：${{on.poll.outputs.trackViewUrl}}
-            
-            更新內容：
-            ${{on.poll.outputs.releaseNotes}}
+          url: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          method: 'POST'
+          data: |
+            {
+              "username": "App Store Update",
+              "avatar_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182480267608114/mi0S5wK.jpg",
+              "content": "**${{on.poll.outputs.trackName}} ${{on.poll.outputs.version}} 版本已上架 App Store**\n前往商店查看：${{on.poll.outputs.trackViewUrl}}\n\n更新內容：\n$<<<{{on.poll.outputs.releaseNotes}}>>>"
+            }

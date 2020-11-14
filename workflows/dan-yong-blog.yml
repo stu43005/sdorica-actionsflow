@@ -12,10 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
-        uses: Ilshidur/action-discord@master
+        uses: actionsflow/axios@v1
         with:
-          args: |
-            ${{on.rss.outputs.title}}
-            ${{on.rss.outputs.link}}
+          url: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          method: 'POST'
+          data: |
+            {
+              "content": "${{on.rss.outputs.title}}\n${{on.rss.outputs.link}}"
+            }
