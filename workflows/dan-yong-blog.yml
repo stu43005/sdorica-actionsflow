@@ -1,0 +1,21 @@
+on:
+  rss:
+    url: https://bb8612.blogspot.com/feeds/posts/default
+    config:
+      filterOutputs:
+        title: 1
+        link: 1
+
+jobs:
+  discord:
+    name: Send a message to discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            ${{on.rss.outputs.title}}
+            ${{on.rss.outputs.link}}

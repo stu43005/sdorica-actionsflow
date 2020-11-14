@@ -1,0 +1,31 @@
+on:
+  rss:
+    url: https://gnn.gamer.com.tw/rss.xml
+    config:
+      filter:
+        $or:
+        - title:
+            $regex: sdorica
+            $options: i
+        - contentSnippet:
+            $regex: sdorica
+            $options: i
+      filterOutputs:
+        title: 1
+        link: 1
+
+jobs:
+  discord:
+    name: Send a message to discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          DISCORD_USERNAME: GNN新聞
+          DISCORD_AVATAR: https://cdn.discordapp.com/attachments/543454386873958413/777182478410317834/jcseAjD.png
+        uses: Ilshidur/action-discord@master
+        with:
+          args: |
+            ${{on.rss.outputs.title}}
+            ${{on.rss.outputs.link}}
