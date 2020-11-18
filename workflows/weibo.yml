@@ -31,7 +31,8 @@ jobs:
                 }
               }]
             };
-            const matchImgs = outputs.content.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g)?.filter(url => url.endsWith('.png') || url.endsWith('.jpg'));
+            let matchImgs = outputs.content.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g);
+            matchImgs = matchImgs && matchImgs.filter(url => url.endsWith('.png') || url.endsWith('.jpg'));
             if (matchImgs && matchImgs.length > 0) {
               payload["embeds"][0]["image"] = {
                 "url": matchImgs[0]
