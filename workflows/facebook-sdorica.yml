@@ -3,7 +3,6 @@ on:
     page: rayark.sdorica
     config:
       # skipFirst: true
-      active: false
 
 jobs:
   discord:

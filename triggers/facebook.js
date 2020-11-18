@@ -59,6 +59,7 @@ module.exports = class Facebook {
 				const $ = cheerio.load(html);
 
 				const itemLinks = $('#recent>div>div>div>div:nth-child(2)>div:nth-child(2)>span+a')
+					.add('#recent>div>section>article>footer>div>span:nth-child(2)+a')
 					.toArray()
 					.map((a) => $(a).attr('href'));
 				this.helpers.log.log(`page [${id}] found ${itemLinks.length} links`);
@@ -66,6 +67,8 @@ module.exports = class Facebook {
 				const pageItems = await Promise.all(
 					itemLinks.map(async (itemLink) => {
 						if (new RegExp(`^/.+/photos/`).test(itemLink)) {
+							// ignore...
+							return null;
 							const data = await this.parsePhotoPage(itemLink);
 							return {
 								id: this.helpers.createContentDigest(data.url),
@@ -117,8 +120,8 @@ module.exports = class Facebook {
 			url,
 			responseType: 'text',
 			headers: {
-				"accept-language": lang || "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6"
-			}
+				"accept-language": lang || "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,ja;q=0.5",
+			},
 		});
 		return html;
 	}
@@ -160,7 +163,8 @@ module.exports = class Facebook {
 			.map((a) => $(a).attr('href'));
 		this.helpers.log.log(`page [${cacheKey}] found ${attachLinkList.length} images`);
 		this.helpers.log.debug(attachLinkList);
-		let images = await Promise.all(attachLinkList.map((link) => this.parsePhotoPage(link)));
+		let images = await Promise.all(attachLinkList.map((link) => this.parsePhotoPage(link).catch(reason => null)));
+		images = images.filter(item => !!item);
 
 		return {
 			url,
