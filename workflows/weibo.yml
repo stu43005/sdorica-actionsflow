@@ -1,0 +1,46 @@
+on:
+  rss:
+    url: https://rsshub.app/weibo/user/5464702529
+    config:
+      # skipFirst: true
+
+jobs:
+  discord:
+    name: Send a message to discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Format message
+        id: format
+        uses: actions/github-script@v2
+        with:
+          script: |
+            const outputs = ${{ toJSON(on.rss.outputs) }};
+            const payload = {
+              "username": "万象物语官方微博",
+              "content": `<${outputs.link}>`,
+              "embeds": [{
+                "author": {
+                  "name": "万象物语",
+                  "url": "https://www.weibo.com/sdorica",
+                  "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653459904987167/005XPkLnly8gik6l3thcnj30sg0sgkjl.png"
+                },
+                "description": outputs.contentSnippet,
+                "footer": {
+                  "text": "微博",
+                  "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653585885495316/1200px-Sina_Weibo_logo.png"
+                }
+              }]
+            };
+            const matchImgs = outputs.content.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g)?.filter(url => url.endsWith('.png') || url.endsWith('.jpg'));
+            if (matchImgs && matchImgs.length > 0) {
+              payload["embeds"][0]["image"] = {
+                "url": matchImgs[0]
+              };
+            }
+            return payload;
+      - name: Discord notification
+        uses: actionsflow/axios@v1
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          method: 'POST'
+          data: ${{ steps.format.outputs.result }}
