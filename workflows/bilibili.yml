@@ -2,8 +2,7 @@ on:
   rss:
     url: https://rsshub.app/bilibili/user/dynamic/350845222
     config:
-      # active: false
-      # skipFirst: true
+      skipOnError: true
 
 jobs:
   discord:

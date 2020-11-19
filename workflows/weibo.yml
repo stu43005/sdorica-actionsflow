@@ -2,8 +2,7 @@ on:
   rss:
     url: https://rsshub.app/weibo/user/5464702529
     config:
-      # active: false
-      # skipFirst: true
+      skipOnError: true
 
 jobs:
   discord:
