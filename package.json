@@ -9,8 +9,8 @@
     "cheerio": "^1.0.0-rc.3"
   },
   "devDependencies": {
-    "@types/cheerio": "^0.22.22",
-    "actionsflow": "^1.7.0"
+    "@types/cheerio": "^0.22.23",
+    "actionsflow": "^1.7.3"
   },
   "keywords": [
     "actionsflow",
