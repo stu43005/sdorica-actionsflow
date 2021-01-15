@@ -11,10 +11,10 @@ jobs:
     steps:
       - name: Format message
         id: format
-        uses: actions/github-script@v3
+        uses: satackey/action-js-inline@v0.0.3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const core = require('@actions/core');
             const outputs = ${{ toJSON(on.facebook.outputs) }};
             const payload = {
               "username": "Sdorica Facebook",
@@ -37,7 +37,7 @@ jobs:
                 "url": outputs.images[0]
               };
             }
-            return payload;
+            core.setOutput('result', payload);
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:

@@ -11,10 +11,10 @@ jobs:
     steps:
       - name: Format message
         id: format
-        uses: actions/github-script@v3
+        uses: satackey/action-js-inline@v0.0.3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const core = require('@actions/core');
             const outputs = ${{ toJSON(on.rss.outputs) }};
             const payload = {
               "username": "万象物语官方微博",
@@ -39,7 +39,7 @@ jobs:
                 "url": matchImgs[0]
               };
             }
-            return payload;
+            core.setOutput('result', payload);
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
