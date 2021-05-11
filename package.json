@@ -5,12 +5,12 @@
   "version": "1.0.0",
   "author": "Owen Young <theowenyoung@gmail.com>",
   "dependencies": {
-    "actionsflow-core": "^1.9.0",
-    "cheerio": "^1.0.0-rc.5"
+    "actionsflow-core": "^1.9.1",
+    "cheerio": "^1.0.0-rc.9"
   },
   "devDependencies": {
-    "@types/cheerio": "^0.22.23",
-    "actionsflow": "^1.10.0"
+    "@types/cheerio": "^0.22.28",
+    "actionsflow": "^1.11.2"
   },
   "keywords": [
     "actionsflow",
