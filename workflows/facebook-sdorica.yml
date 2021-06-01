@@ -36,6 +36,13 @@ jobs:
               payload["embeds"][0]["image"] = {
                 "url": outputs.images[0]
               };
+              if (outputs.images.length > 1) {
+                payload["embeds"].push(...outputs.images.slice(1).map(img => {
+                  "image": {
+                    "url": img
+                  }
+                }));
+              }
             }
             core.setOutput('result', payload);
       - name: Discord notification

@@ -86,7 +86,7 @@ module.exports = class Facebook {
 								title: data.title,
 								link: data.url,
 								content: data.content,
-								images: data.images.map(img => img.image),
+								images: data.images.map(img => img.image).filter(img => !!img),
 							};
 						}
 					})
@@ -137,7 +137,7 @@ module.exports = class Facebook {
 
 		const url = `https://www.facebook.com/story.php?story_fbid=${storyFbId}&id=${storyId}`;
 		const $story = $('#m_story_permalink_view').first();
-		const $box = $story.find('div > div > div > div').eq(0);
+		const $box = $story.find('div[data-ft*="story_fbid"] > div').eq(0);
 		const $header = $box.find('> div').eq(0);
 		const $content = $box.find('> div').eq(1);
 		const $attach = $box.find('> div').eq(2);
