@@ -1,6 +1,6 @@
 on:
-  rss:
-    url: https://rsshub.app/weibo/user/5464702529
+  rsshub:
+    path: /weibo/user/5464702529
     config:
       skipOnError: true
 
@@ -15,7 +15,7 @@ jobs:
         with:
           script: |
             const core = require('@actions/core');
-            const outputs = ${{ toJSON(on.rss.outputs) }};
+            const outputs = ${{ toJSON(on.rsshub.outputs) }};
             const payload = {
               "username": "万象物语官方微博",
               "content": `<${outputs.link}>`,
@@ -25,14 +25,14 @@ jobs:
                   "url": "https://www.weibo.com/sdorica",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653459904987167/005XPkLnly8gik6l3thcnj30sg0sgkjl.png"
                 },
-                "description": outputs.contentSnippet,
+                "description": outputs.description.substr(0, outputs.description.indexOf("<br>")),
                 "footer": {
                   "text": "微博",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653585885495316/1200px-Sina_Weibo_logo.png"
                 }
               }]
             };
-            let matchImgs = outputs.content.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g);
+            let matchImgs = outputs.description.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g);
             matchImgs = matchImgs && matchImgs.filter(url => url.endsWith('.png') || url.endsWith('.jpg'));
             if (matchImgs && matchImgs.length > 0) {
               payload["embeds"][0]["image"] = {
