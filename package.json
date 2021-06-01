@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "author": "Owen Young <theowenyoung@gmail.com>",
   "dependencies": {
-    "@actionsflow/trigger-rsshub": "1.0.1",
+    "@actionsflow/trigger-rsshub": "1.0.2",
     "actionsflow-core": "^1.9.1",
     "cheerio": "^1.0.0-rc.9"
   },
