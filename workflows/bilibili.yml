@@ -11,10 +11,9 @@ jobs:
     steps:
       - name: Format message
         id: format
-        uses: satackey/action-js-inline@v0.0.2
+        uses: actions/github-script@v4
         with:
           script: |
-            const core = require('@actions/core');
             const outputs = ${{ toJSON(on.rsshub.outputs) }};
             const payload = {
               "username": "万象物语的个人空间 - 哔哩哔哩 ( ゜- ゜)つロ 乾杯~ Bilibili",
@@ -39,7 +38,7 @@ jobs:
                 "url": matchImgs[0]
               };
             }
-            core.setOutput('result', payload);
+            return payload;
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
