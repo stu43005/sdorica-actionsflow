@@ -24,7 +24,7 @@ jobs:
                   "url": "https://www.weibo.com/sdorica",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653459904987167/005XPkLnly8gik6l3thcnj30sg0sgkjl.png"
                 },
-                "description": outputs.description.substr(0, outputs.description.indexOf("<br>")),
+                "description": outputs.description.substr(0, Math.min(1000, outputs.description.indexOf("<br>"))),
                 "footer": {
                   "text": "微博",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653585885495316/1200px-Sina_Weibo_logo.png"

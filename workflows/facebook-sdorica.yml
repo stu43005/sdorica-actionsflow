@@ -24,7 +24,7 @@ jobs:
                   "url": "https://www.facebook.com/rayark.sdorica/",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777186584000724992/118745707_1600182993519599_5578732041796140826_o.png"
                 },
-                "description": outputs.content,
+                "description": outputs.content.substr(0, 1000),
                 "footer": {
                   "text": "Facebook",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"

@@ -23,7 +23,7 @@ jobs:
                   "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
                   "url": "https://www.facebook.com/TWCDC/"
                 },
-                "description": outputs.content,
+                "description": outputs.content.substr(0, 1000),
                 "footer": {
                   "text": "Facebook",
                   "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
