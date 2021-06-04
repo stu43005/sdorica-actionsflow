@@ -22,8 +22,8 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const outputs = ${{ toJSON(on.rsshub.outputs) }};
-            const format = require('./actions/discord-format.js');
+            const outputs = ${{ toJSON(on.rsshub.outputs) }}
+            const format = require('./actions/discord-format.js')
             return format(outputs, "Sdorica | Facebook", {
               "name": "Sdorica (@rayark.sdorica)",
               "url": "https://www.facebook.com/rayark.sdorica/",
@@ -31,7 +31,7 @@ jobs:
             }, {
               "text": "Facebook",
               "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
-            });
+            })
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:

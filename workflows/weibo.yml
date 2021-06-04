@@ -10,8 +10,8 @@ on:
             item.content = `${item.content.substring(0, 997)}...`
           }
         }
-        let matchImgs = item.description.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g);
-        item.images = matchImgs?.filter(url => /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(url));
+        let matchImgs = item.description.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g)
+        item.images = matchImgs?.filter(url => /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(url))
         return item
 
 jobs:
@@ -24,8 +24,8 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const outputs = ${{ toJSON(on.rsshub.outputs) }};
-            const format = require('./actions/discord-format.js');
+            const outputs = ${{ toJSON(on.rsshub.outputs) }}
+            const format = require('./actions/discord-format.js')
             return format(outputs, "万象物语的微博", {
               "name": "万象物语",
               "url": "https://www.weibo.com/sdorica",
@@ -33,7 +33,7 @@ jobs:
             }, {
               "text": "微博",
               "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778653585885495316/1200px-Sina_Weibo_logo.png"
-            });
+            })
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:

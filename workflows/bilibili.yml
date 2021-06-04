@@ -10,8 +10,8 @@ on:
             item.content = `${item.content.substring(0, 997)}...`
           }
         }
-        let matchImgs = item.description.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g);
-        item.images = matchImgs?.filter(url => /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(url));
+        let matchImgs = item.description.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/g)
+        item.images = matchImgs?.filter(url => /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(url))
         return item
 
 jobs:
@@ -24,8 +24,8 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const outputs = ${{ toJSON(on.rsshub.outputs) }};
-            const format = require('./actions/discord-format.js');
+            const outputs = ${{ toJSON(on.rsshub.outputs) }}
+            const format = require('./actions/discord-format.js')
             return format(outputs, "万象物语的个人空间 - 哔哩哔哩 ( ゜- ゜)つロ 乾杯~ Bilibili", {
               "name": "万象物语",
               "url": "https://space.bilibili.com/350845222",
@@ -33,7 +33,7 @@ jobs:
             }, {
               "text": "Bilibili",
               "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/778648632127127613/39107515-619773e0-46f5-11e8-9fa9-2859816f1c42.png"
-            });
+            })
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
