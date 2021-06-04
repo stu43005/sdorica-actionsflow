@@ -25,7 +25,32 @@ jobs:
         with:
           script: |
             const outputs = ${{ toJSON(on.rsshub.outputs) }}
-            const format = require('./actions/discord-format.js')
+            const format = (item, username, author, footer) => {
+              const payload = {
+                "username": username,
+                "content": `<${item.link}>`,
+                "embeds": [
+                  {
+                    "author": author,
+                    "description": item.content.substr(0, 1000),
+                    "footer": footer
+                  }
+                ]
+              };
+              if (item.images.length > 0) {
+                payload["embeds"][0]["image"] = {
+                  "url": item.images[0]
+                };
+                if (item.images.length > 1) {
+                  payload["embeds"].push(...item.images.slice(1).map(img => ({
+                    "image": {
+                      "url": img
+                    }
+                  })));
+                }
+              }
+              return payload;
+            };
             return format(outputs, "万象物语的个人空间 - 哔哩哔哩 ( ゜- ゜)つロ 乾杯~ Bilibili", {
               "name": "万象物语",
               "url": "https://space.bilibili.com/350845222",

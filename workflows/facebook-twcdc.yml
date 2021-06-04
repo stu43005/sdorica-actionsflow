@@ -23,7 +23,32 @@ jobs:
         with:
           script: |
             const outputs = ${{ toJSON(on.facebook.outputs) }}
-            const format = require('./actions/discord-format.js')
+            const format = (item, username, author, footer) => {
+              const payload = {
+                "username": username,
+                "content": `<${item.link}>`,
+                "embeds": [
+                  {
+                    "author": author,
+                    "description": item.content.substr(0, 1000),
+                    "footer": footer
+                  }
+                ]
+              };
+              if (item.images.length > 0) {
+                payload["embeds"][0]["image"] = {
+                  "url": item.images[0]
+                };
+                if (item.images.length > 1) {
+                  payload["embeds"].push(...item.images.slice(1).map(img => ({
+                    "image": {
+                      "url": img
+                    }
+                  })));
+                }
+              }
+              return payload;
+            };
             return format(outputs, "疾病管制署 - 1922防疫達人 | Facebook", {
               "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
               "url": "https://www.facebook.com/TWCDC/"
