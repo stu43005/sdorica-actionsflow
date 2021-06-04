@@ -19,6 +19,7 @@
   ],
   "license": "0BSD",
   "scripts": {
+    "rebuild": "npm run clean && npm run build",
     "build": "actionsflow build",
     "start": "actionsflow start",
     "watch": "actionsflow start -w",

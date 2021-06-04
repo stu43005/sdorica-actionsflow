@@ -3,6 +3,14 @@ on:
     page: TWCDC
     config:
       # skipFirst: true
+      format: |
+        if (item.content) {
+          item.content = item.content.trim()
+          if (item.content.length > 1000) {
+            item.content = `${item.content.substring(0, 997)}...`
+          }
+        }
+        return item
 
 jobs:
   discord:
@@ -14,35 +22,15 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const outputs = ${{ toJSON(on.facebook.outputs) }};
-            const payload = {
-              "username": "疾病管制署 - 1922防疫達人",
-              "content": `<${outputs.link}>`,
-              "embeds": [{
-                "author": {
-                  "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
-                  "url": "https://www.facebook.com/TWCDC/"
-                },
-                "description": outputs.content.substr(0, 1000),
-                "footer": {
-                  "text": "Facebook",
-                  "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
-                }
-              }]
-            };
-            if (outputs.images.length > 0) {
-              payload["embeds"][0]["image"] = {
-                "url": outputs.images[0]
-              };
-              if (outputs.images.length > 1) {
-                payload["embeds"].push(...outputs.images.slice(1).map(img => ({
-                  "image": {
-                    "url": img
-                  }
-                })));
-              }
-            }
-            return payload;
+            const outputs = ${{ toJSON(on.rsshub.outputs) }};
+            const format = require('./actions/discord-format.js');
+            return format(outputs, "疾病管制署 - 1922防疫達人 | Facebook", {
+              "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
+              "url": "https://www.facebook.com/TWCDC/"
+            }, {
+              "text": "Facebook",
+              "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
+            });
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
