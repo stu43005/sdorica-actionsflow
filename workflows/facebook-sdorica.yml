@@ -22,7 +22,7 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const outputs = ${{ toJSON(on.rsshub.outputs) }}
+            const outputs = ${{ toJSON(on.facebook.outputs) }}
             const format = require('./actions/discord-format.js')
             return format(outputs, "Sdorica | Facebook", {
               "name": "Sdorica (@rayark.sdorica)",
