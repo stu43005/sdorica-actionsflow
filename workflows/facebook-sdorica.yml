@@ -47,6 +47,7 @@ jobs:
                   })));
                 }
               }
+              console.log(JSON.stringify(payload));
               return payload;
             };
             return format(outputs, "Sdorica | Facebook", {

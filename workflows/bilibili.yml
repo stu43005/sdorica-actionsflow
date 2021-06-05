@@ -49,6 +49,7 @@ jobs:
                   })));
                 }
               }
+              console.log(JSON.stringify(payload));
               return payload;
             };
             return format(outputs, "万象物语的个人空间 - 哔哩哔哩 ( ゜- ゜)つロ 乾杯~ Bilibili", {

@@ -49,6 +49,7 @@ jobs:
                   })));
                 }
               }
+              console.log(JSON.stringify(payload));
               return payload;
             };
             return format(outputs, "万象物语的微博", {
