@@ -5,7 +5,7 @@ module.exports = (item, username, author, footer) => {
 		"embeds": [
 			{
 				"author": author,
-				"description": item.content.substr(0, 1000),
+				"description": item.content,
 				"footer": footer
 			}
 		]
