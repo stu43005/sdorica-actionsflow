@@ -133,6 +133,7 @@ module.exports = class Facebook {
 		const cacheKey = `story/${storyFbId}/${storyId}`;
 
 		const html = await this.tryGet(cacheKey, () => this.fetchPageHtml(linkPath));
+		console.log(`[parseStoryPage][${linkPath}]: html = ${html}`);
 		const $ = cheerio.load(html);
 
 		const url = `https://www.facebook.com/story.php?story_fbid=${storyFbId}&id=${storyId}`;
