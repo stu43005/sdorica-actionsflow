@@ -56,30 +56,53 @@ module.exports = class Facebook {
 
 			try {
 				const html = await this.fetchPageHtml(linkPath);
+				// this.helpers.log.log(`[run][${linkPath}]: html = ${html}`);
 				const $ = cheerio.load(html);
+
+				const $recent = $('#recent').first();
+				const $items = $recent.find('[data-ft*="story_fbid"]');
 
 				const itemLinks = $('#recent>div>div>div>div:nth-child(2)>div:nth-child(2)>span+a')
 					.add('#recent>div>section>article>footer>div>span:nth-child(2)+a')
 					.toArray()
 					.map((a) => $(a).attr('href'));
-				this.helpers.log.log(`page [${id}] found ${itemLinks.length} links`);
+				this.helpers.log.log(`page [${id}] found ${$items.length} items`);
 
 				const pageItems = await Promise.all(
-					itemLinks.map(async (itemLink) => {
-						if (new RegExp(`^/.+/photos/`).test(itemLink)) {
-							// ignore...
-							return null;
-							const data = await this.parsePhotoPage(itemLink);
-							return {
-								id: this.helpers.createContentDigest(data.url),
-								title: data.title,
-								link: data.url,
-								content: data.content,
-								images: [data.image],
-							};
-						}
-						if (new RegExp(`^/story.php`).test(itemLink)) {
-							const data = await this.parseStoryPage(itemLink);
+					$items.map(async (index, element) => {
+						const $item = cheerio.load(element).root();
+						const itemLink = $item.find("div:nth-child(2)>div:nth-child(2)>span+a").first().attr("href")
+							?? $item.find("footer>div>span:nth-child(2)+a").first().attr("href");
+
+						try {
+							if (new RegExp(`^/.+/photos/`).test(itemLink)) {
+								// ignore...
+								return null;
+								// const data = await this.parsePhotoPage(itemLink);
+								// return {
+								// 	id: this.helpers.createContentDigest(data.url),
+								// 	title: data.title,
+								// 	link: data.url,
+								// 	content: data.content,
+								// 	images: [data.image],
+								// };
+							}
+
+							if (new RegExp(`^/story.php`).test(itemLink)) {
+								const data = await this.fetchStoryPage(itemLink);
+
+								return {
+									id: this.helpers.createContentDigest(data.url),
+									title: data.title,
+									link: data.url,
+									content: data.content,
+									images: data.images.map(img => img.image).filter(img => !!img),
+								};
+							}
+
+						} catch (error) {
+							this.helpers.log.error(`fetch item [${itemLink}] error:`, error);
+							const data = await this.parseStoryPage($, $item, itemLink);
 
 							return {
 								id: this.helpers.createContentDigest(data.url),
@@ -121,27 +144,78 @@ module.exports = class Facebook {
 			responseType: 'text',
 			headers: {
 				"accept-language": lang || "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,ja;q=0.5",
+				// "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
 			},
 		});
 		return html;
 	}
 
-	async parseStoryPage(linkPath) {
+	getStoryUrl(linkPath) {
 		const { searchParams: q } = new URL('https://mbasic.facebook.com' + linkPath);
 		const storyFbId = q.get('story_fbid');
 		const storyId = q.get('id');
-		const cacheKey = `story/${storyFbId}/${storyId}`;
-
-		const html = await this.tryGet(cacheKey, () => this.fetchPageHtml(linkPath));
-		console.log(`[parseStoryPage][${linkPath}]: html = ${html}`);
-		const $ = cheerio.load(html);
-
 		const url = `https://www.facebook.com/story.php?story_fbid=${storyFbId}&id=${storyId}`;
-		const $story = $('#m_story_permalink_view').first();
-		const $box = $story.find('div[data-ft*="story_fbid"] > div').eq(0);
+		const cacheKey = `story/${storyFbId}/${storyId}`;
+		return {
+			url,
+			cacheKey,
+		};
+	}
+
+	async fetchStoryPage(linkPath) {
+		const { url, cacheKey } = this.getStoryUrl(linkPath);
+
+		/**
+		 * @type string
+		 */
+		const html = await this.tryGet(cacheKey, () => this.fetchPageHtml(linkPath));
+		// this.helpers.log.log(`[fetchStoryPage][${linkPath}]: html = ${html}`);
+		if (~html.indexOf("You must log in first") || ~html.indexOf("請先登入")) {
+			throw new Error(`You must log in first.`);
+		}
+		if (~html.indexOf("temporarily blocked") || ~html.indexOf("你暫時遭到封鎖")) {
+			throw new Error(`You have been temporarily blocked from performing this action.`);
+		}
+
+		const $ = cheerio.load(html);
+		const $story = $('#m_story_permalink_view');
+		const $item = $story.find('[data-ft*="story_fbid"]');
+		// const $box = $story.find('[data-ft*="story_fbid"] > div').eq(0);
+		const result = await this.parseStoryPage($, $item, linkPath);
+
+		// console.log(`-----------------------------------`);
+		// console.log(`$:html`, $.html());
+		// console.log(`$story`, $story.length);
+		// console.log(`$item`, $item.length);
+		// console.log(`$box`, $box.length);
+		// console.log(`result`, result);
+
+		if (!result.content) {
+			throw new Error(`Page no content`);
+		}
+		return result;
+	}
+
+	/**
+	 * @param {cheerio.Root} $
+	 * @param {cheerio.Cheerio} $item
+	 * @param {string} linkPath
+	 */
+	async parseStoryPage($, $item, linkPath) {
+		const { url, cacheKey } = this.getStoryUrl(linkPath);
+
+		const $box = $item.find('div > div').eq(0);
 		const $header = $box.find('> div').eq(0);
 		const $content = $box.find('> div').eq(1);
 		const $attach = $box.find('> div').eq(2);
+
+		// console.log(`-----------------------------------`);
+		// console.log(`$item:html`, $item.html());
+		// console.log(`$item`, $item.length);
+		// console.log(`$box`, $box.length);
+		// console.log(`$header`, $header.length);
+		// console.log(`$content`, $content.length);
+		// console.log(`$attach`, $attach.length);
 
 		const title = $header.find('h3').text();
 
@@ -158,20 +232,30 @@ module.exports = class Facebook {
 				.join('\n');
 		}
 
-		const attachLinkList = $attach
-			.find('a')
+		const attachList = $attach.find('a');
+		const attachLinkList = attachList
 			.toArray()
 			.map((a) => $(a).attr('href'));
+		const attachImgList = attachList
+			.find('img')
+			.toArray()
+			.map((a) => $(a).attr('src'));
 		this.helpers.log.log(`page [${cacheKey}] found ${attachLinkList.length} images`);
 		this.helpers.log.debug(attachLinkList);
-		let images = await Promise.all(attachLinkList.map((link) => this.parsePhotoPage(link).catch(reason => null)));
-		images = images.filter(item => !!item);
+		let images = await Promise.all(attachLinkList.map((link, index) =>
+			this.parsePhotoPage(link).catch(reason => {
+				this.helpers.log.error(`fetch photo [${linkPath}] error:`, reason);
+				return {
+					image: attachImgList[index],
+				};
+			})
+		));
 
 		return {
 			url,
 			title,
 			content,
-			images,
+			images: images.filter(item => !!item),
 		};
 	}
 
@@ -189,6 +273,9 @@ module.exports = class Facebook {
 		const content = $content.text();
 		const image = $('#MPhotoContent div.desc.attachment > span > div > span > a[target=_blank].sec').attr('href');
 
+		if (!image) {
+			throw new Error(`Page no photo`);
+		}
 		return {
 			url,
 			title,
