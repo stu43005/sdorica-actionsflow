@@ -101,7 +101,7 @@ module.exports = class Facebook {
 							}
 
 						} catch (error) {
-							console.error(`[facebook]: fetch item [${itemLink}] error:`, error);
+							console.log(`[facebook]: fetch item [${itemLink}] error:`, error);
 							const data = await this.parseStoryPage($, $item, itemLink);
 
 							return {
