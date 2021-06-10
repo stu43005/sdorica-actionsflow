@@ -10,56 +10,53 @@ on:
             item.content = `${item.content.substring(0, 997)}...`
           }
         }
-        return item
+        const format = (item, username, author, footer) => {
+          const payload = {
+            "username": username,
+            "content": `<${item.link}>`,
+            "embeds": [
+              {
+                "author": author,
+                "description": item.content,
+                "footer": footer
+              }
+            ]
+          };
+          if (item.images.length > 0) {
+            payload["embeds"][0]["image"] = {
+              "url": item.images[0]
+            };
+            if (item.images.length > 1) {
+              payload["embeds"].push(...item.images.slice(1).map(img => ({
+                "image": {
+                  "url": img
+                }
+              })));
+            }
+          }
+          // console.log(JSON.stringify(payload));
+          return payload;
+        };
+        const payload = format(item, "疾病管制署 - 1922防疫達人 | Facebook", {
+          "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
+          "url": "https://www.facebook.com/TWCDC/"
+        }, {
+          "text": "Facebook",
+          "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
+        });
+        return {
+          ...item,
+          payload,
+        };
 
 jobs:
   discord:
     name: Send a message to discord
     runs-on: ubuntu-latest
     steps:
-      - name: Format message
-        id: format
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const outputs = ${{ toJSON(on.facebook.outputs) }}
-            const format = (item, username, author, footer) => {
-              const payload = {
-                "username": username,
-                "content": `<${item.link}>`,
-                "embeds": [
-                  {
-                    "author": author,
-                    "description": item.content,
-                    "footer": footer
-                  }
-                ]
-              };
-              if (item.images.length > 0) {
-                payload["embeds"][0]["image"] = {
-                  "url": item.images[0]
-                };
-                if (item.images.length > 1) {
-                  payload["embeds"].push(...item.images.slice(1).map(img => ({
-                    "image": {
-                      "url": img
-                    }
-                  })));
-                }
-              }
-              console.log(JSON.stringify(payload));
-              return payload;
-            };
-            return format(outputs, "疾病管制署 - 1922防疫達人 | Facebook", {
-              "name": "疾病管制署 - 1922防疫達人 (@TWCDC)",
-              "url": "https://www.facebook.com/TWCDC/"
-            }, {
-              "text": "Facebook",
-              "icon_url": "https://cdn.discordapp.com/attachments/543454386873958413/777182912629309480/m8bb1q5.png"
-            })
       - name: Discord notification
         uses: actionsflow/axios@v1
         with:
           url: ${{ secrets.DISCORD_WEBHOOK_TWCDC }}
           method: 'POST'
-          data: ${{ steps.format.outputs.result }}
+          data: ${{ toJSON(on.facebook.outputs.payload) }}
