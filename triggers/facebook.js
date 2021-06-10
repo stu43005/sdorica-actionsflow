@@ -244,7 +244,7 @@ module.exports = class Facebook {
 		this.helpers.log.debug(attachLinkList);
 		let images = await Promise.all(attachLinkList.map((link, index) =>
 			this.parsePhotoPage(link).catch(reason => {
-				this.helpers.log.error(`fetch photo [${linkPath}] error:`, reason);
+				console.log(`fetch photo [${linkPath}] error:`, reason);
 				return {
 					image: attachImgList[index],
 				};
