@@ -62,4 +62,4 @@ jobs:
         with:
           url: ${{ secrets.DISCORD_WEBHOOK_NEWS_FEED }}
           method: 'POST'
-          data: ${{ toJSON(on.facebook.outputs.payload) }}
+          data: ${{ toJSON(on.rsshub.outputs.payload) }}
