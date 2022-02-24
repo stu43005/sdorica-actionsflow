@@ -2,6 +2,7 @@ on:
   facebook:
     page: rayark.sdorica
     config:
+      active: false
       # skipFirst: true
       format: |
         if (item.content) {
